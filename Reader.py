@@ -8,13 +8,10 @@ Read log files.
 @author: phansson
 """
 
-import os
-import sys
 import argparse
 import csv
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
 
 def get_args():
     """Command line options."""
