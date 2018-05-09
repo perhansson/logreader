@@ -25,6 +25,6 @@ python example.py path_to_log_file
 import matplotlib.pyplot as plt
 import Reader
 logfile = Reader.LogFileType1("/Users/phansson/work/climeon/logging/data/Datalog_2018_05_03_01_00_02.csv")
-logfile.df["TurbSpeed [rpm]"].plot()
+logfile.df.between_time('10:00','13:00')["T33 [deg C]"].plot() # plot T33 temperature between specific times
 plt.show()
 ```
