@@ -73,8 +73,10 @@ ax.xaxis.set_major_formatter(dates.DateFormatter('%H:%M'))
 
 # adjacent plots
 fig, (ax1, ax2) = plt.subplots(2,1)
-ax1.plot(logfile.df["NetOutEnergy [kWh]"])
-ax2.plot(logfile.df["TurbSpeed [rpm]"])
+ax1.plot(logfile.df["NetOutEnergy [kWh]"], label="NetOutEnergy [kWh]")
+ax1.legend()
+ax2.plot(logfile.df["TurbSpeed [rpm]"], label="TurbSpeed [rpm]")
+ax2.legend()
 
 plt.show()
 
