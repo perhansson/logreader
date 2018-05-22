@@ -27,10 +27,25 @@ class LogFile(object):
     def __init__(self, log_file=None):
         """Initialize."""
         self.log_file = log_file
+        self.df = None 
 
     def process(self):
         """Process the data"""
         
+
+    def find_col(self, s, regex=False ):
+        """Find columns based on string. 
+            
+            s: (sub)string to search for.
+            regex: use regular expression
+            
+            Returns: list of matching column names.
+        """
+        l = []
+        [l.append(value) for value in self.df.iloc[0].axes[0].values if s in value]
+        return l
+                   
+
 
 class LogFileType1(LogFile):
     """Reader for log file Type 1."""
@@ -43,14 +58,16 @@ class LogFileType1(LogFile):
         self.headers = []
         self.raw_data = None
         self.raw_time = None
-        self.df = None
         
         # process the data automatically
         self.process()
     
         
     
-    def __get_headers(self):
+    def get_headers(self):
+        return self.headers()
+    
+    def process_headers(self):
         """ Extract the headers. """
         
         print("Process headers")
@@ -60,13 +77,18 @@ class LogFileType1(LogFile):
         # find header row
         for i in range(self.header_line):
             next(f)
-        self.headers = next(f).split(",")
-        del self.headers[-1]
-        del self.headers[0]
-        print("got {:n} headers".format(len(self.headers)))
+        headers = next(f).split(",")
+        del headers[-1]
+        del headers[0]
+        print("got {:n} headers".format(len(headers)))
         f.close()
+        return headers
         
-    def __get_data(self):
+        
+    def get_data(self):
+        return self.raw_data
+
+    def process_data(self):
         """Extract the data into a numpy array."""
         
         print("Process data")
@@ -76,11 +98,15 @@ class LogFileType1(LogFile):
         # find data row
         for i in range(self.data_line):
             next(f)
-        self.raw_data = np.loadtxt(f,delimiter=",",skiprows=0,usecols=range(1,len(self.headers)+1))
-        print("got data with shape " + str(self.raw_data.shape))
+        raw_data = np.loadtxt(f,delimiter=",",skiprows=0,usecols=range(1,len(self.headers)+1))
+        print("got data with shape " + str(raw_data.shape))
         f.close()
+        return raw_data
     
-    def __get_time(self):
+    def get_time(self):
+        return self.pd_time
+    
+    def process_time(self):
         """Extract log times to pandas TimeStamps."""
         
         print("Process date and time.")
@@ -92,17 +118,18 @@ class LogFileType1(LogFile):
             next(f)
         reader = csv.reader(f)
         #invert and get first row
-        self.raw_time = list(zip(*reader))[0]
-        print("got {:d} date/times ".format(len(self.raw_time)))
-        self.pd_time = pd.to_datetime(self.raw_time)
+        raw_time = list(zip(*reader))[0]
+        return raw_time
         
     
     def process(self):
         """Process data from the log file into a pandas DataFrame."""
         
-        self.__get_headers()
-        self.__get_data()
-        self.__get_time()
+        self.headers = self.process_headers()
+        self.raw_data = self.process_data()
+        self.raw_time = self.process_time()
+        print("got {:d} date/times ".format(len(self.raw_time)))
+        self.pd_time = pd.to_datetime(self.raw_time)
 
         print("Create data frame")
         

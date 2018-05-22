@@ -34,7 +34,7 @@ print("Reading log file: " + filename)
 logfile = Reader.LogFileType1(filename)
 
 # Example selecting a row (first one) by integer: print headers to std output
-print(logfile.df.iloc[0])
+print(logfile.df.iloc[0].axes)
 
 
 # examples plotting
